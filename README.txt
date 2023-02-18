@@ -1,16 +1,19 @@
 NPloader (DLC loader) - codestation
 
-This plugin allows direct reading and loading of DLC (EDATA/PGD/SPRX) files in
-their decrypted form, so you don't need to reactivate your account and/or switch
-between them while using your purchased DLC from different regions. You can mix
+Modified by lusid1 with encrypted DLC handling code by qwikrazor87
+
+This plugin allows direct reading and loading of DLC (EDATA/PGD/SPRX) files in either 
+their encrypted or decrypted form, so you don't need to reactivate your account and/or 
+switch between them while using your purchased DLC from different regions. You can mix 
 decrypted/encrypted files without problem too, the plugin takes care of that.
 
 Instructions:
 
 Copy the plugin in the seplugins folder and enable it in game.txt using the following
-line: ms0:/seplugins/nploader.prx 1
+line: ms0:/seplugins/nploader_mod.prx 1
 
 Tested on CFW from 5.00 to 6.60 (Pro CFW is recommended).
+Mod tested on 6.61 ARK and 6.61 Pro.
 
 New in 0.8:
 Now you can place your DLC folders in a custom location (useful if you don't want to fill
@@ -26,8 +29,11 @@ the DLC folder (e.g.: game updates), then these files must remain in that direct
 Known issues:
 Do not mix with the noDRM implementation of Pro CFW. If you are using one of them
 then disable the other.
+Do not mix with the npdrm_free plugin. Use the npdrm_free_mod plugin instead.
 
 Changelog:
+v1.0 MOD:
+      Added support for encrypted DLC
 v0.9: Fixed bug with redirection on np_rename.
       Added support for newer games that load at 0x08900000.
 v0.8: Added support for custom DLC location.
@@ -51,3 +57,4 @@ v0.2: Unified plugins in one (nploader.prx) and fixed issue with aLoader.
 v0.1: Initial release.
 
 Contact: identi.ca/Twitter @codestation
+note: please do not bother @codestation with questions about this mod.

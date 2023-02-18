@@ -19,6 +19,7 @@
 
 #include <pspkernel.h>
 #include <string.h>
+#include "lib.h"
 #include "hook.h"
 #include "nploader.h"
 #include "path.h"
@@ -75,6 +76,25 @@ void patch_load(SceModule2 *module) {
         kprintf(">>> hook to sceKernelLoadModuleNpDrm failed (not critical)\n");
 }
 
+int patch_drm_driver(){
+    kprintf(">> patch_drm_driver()");
+    u32 addr;
+    kprintf("finding module scePSPNpDrm_Driver\n");
+    SceModule2 *mod = FindModuleByName("scePspNpDrm_Driver");
+    if(mod){
+        kprintf("scanning addr range %08X to %08X\n", mod->text_addr, mod->text_size);
+        for (addr = mod->text_addr; addr < (mod->text_addr + mod->text_size ); addr += 4) {
+            if (_lw(addr) == 0x2CC60080) { //sltiu      $a2, $a2, 128
+                kprintf("hijack_function at %08X\n", addr - 8);
+                HIJACK_FUNCTION(addr - 8, setup_edat_version_key_hook, setup_edat_version_key);
+            
+                break;
+            }
+        }
+    }
+    return 1;
+}
+
 int patch_drm(SceModule2 *module) {
     const char *base = "scePspNpDrm_user";
     kprintf(">> Patching %s imports\n", base);
@@ -84,6 +104,7 @@ int patch_drm(SceModule2 *module) {
         kprintf(">>> hook to sceNpDrmEdataSetupKey failed\n");
         return 0;
     }
+    
     // sceNpDrmEdataGetDataSize
     sceNpDrmEdataGetDataSize_func = NULL;
     if (hook_import_bynid(module, base, 0x219EF5CC, np_size, 1) < 0)
@@ -143,6 +164,7 @@ int module_start_handler(SceModule2 * module) {
                 // the npdrm hook was successful
                 patch_io(module);
                 patch_load(module);
+                patch_drm_driver();
             }
             module_found = 1;
         }
@@ -160,6 +182,7 @@ int module_start_handler(SceModule2 * module) {
         // some games reload scePspNpDrm and it could change address so we need
         // to invalidate the previous func addresses and re-hook
         hook_user_modules();
+        patch_drm_driver();
     }
     return previous ? previous(module) : 0;
 }

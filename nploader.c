@@ -31,6 +31,8 @@
 u32 sctrlHENFindFunction(char *modname, char *libname, u32 nid);
 
 int decrypted = 0;
+char g_pgd_path[256];
+u8 pgdbuf[0x90];
 
 // sceIo functions
 SceUID (*sceIoOpen_func)(const char *file, int flags, SceMode mode) = NULL;
@@ -51,6 +53,32 @@ int (*sceNpDrmRenameCheck_func)(const char *file) = NULL;
 // loadModule functions
 SceUID (*sceKernelLoadModuleNpDrm_func)(const char *path, int flags, SceKernelLMOption *option) = NULL;
 SceUID (*sceKernelLoadModule_func)(const char *path, int flags, SceKernelLMOption *option) = NULL;
+
+// utility function
+u32 tou32(u8 *buf)
+{
+    return (u32)(buf[0] | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24));
+}
+
+//patches sceNpDrmEdataSetupKey and sceNpDrmGetModuleKey
+
+int setup_edat_version_key_hook(u8 *vkey, u8 *edat, int size)
+{
+    kprintf("setup_edat_version_key_hook()\n");
+    int ret = setup_edat_version_key(vkey, edat, size);
+
+    if (ret < 0) { //generate key from mac if official method fails.
+        ret = sceIoOpen(g_pgd_path, 1, 0);
+        sceIoRead(ret, pgdbuf, 16);
+        sceIoLseek(ret, tou32(pgdbuf + 0xC) & 0xFFFF, 0);
+        sceIoRead(ret, pgdbuf, 0x90);
+        sceIoClose(ret);
+
+        ret = get_edat_key(vkey, pgdbuf);
+    }
+
+    return ret;
+}
 
 // the games calls this function (sceNpDrmEdataSetupKey) before reading the edat files
 // returns 0 on success or a SCE error code otherwise
@@ -152,6 +180,8 @@ SceUID _npprx_open(const char *file, int flags, SceMode mode, int async) {
         char *redir = redirect_path(file);
         if(redir) file = redir;
 #endif
+        strcpy(g_pgd_path, file);
+        
         int res = check_encryption(file);
         switch (res) {
         case 0: // DECRYPTED

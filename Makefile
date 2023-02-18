@@ -1,5 +1,5 @@
-TARGET = nploader
-OBJS =  main.o hook.o imports.o exports.o nploader.o path.o logger.o
+TARGET = nploader_mod
+OBJS =  main.o hook.o imports.o exports.o nploader.o path.o logger.o lib.o pgd.o
 LIBS =
 CFLAGS = -O2 -G0 -Wall -std=c99 -DCUSTOM_PATH
 # -DKPRINTF_ENABLED

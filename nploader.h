@@ -22,6 +22,7 @@
 
 #include <pspsdk.h>
 #include <pspiofilemgr_stat.h>
+#include "pgd.h"
 
 extern SceUID (*sceIoOpen_func)(const char *file, int flags, SceMode mode);
 extern SceUID (*sceIoOpenAsync_func)(const char *file, int flags, SceMode mode);
@@ -48,5 +49,10 @@ SceOff np_size(SceUID fd);
 int np_rename(const char *file);
 
 SceUID np_load(const char *path, int flags, SceKernelLMOption *option);
+int (* setup_edat_version_key)(u8 *vkey, u8 *edat, int size);
+int setup_edat_version_key_hook(u8 *vkey, u8 *edat, int size);
+
+u32 tou32(u8 *buf);
+
 
 #endif /* NPLOADER_H_ */
