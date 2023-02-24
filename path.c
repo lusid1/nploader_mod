@@ -47,9 +47,17 @@ char *redirect_path(const char *path) {
             memcpy(userbuf_backup, USERMEM_PTR, sizeof(userbuf_backup));
             strcpy(USERMEM_PTR, buffer);
             strcat(USERMEM_PTR, str + offset + 1);
-            kprintf("%s redirected to %s\n", path, USERMEM_PTR);
-            pspSdkSetK1(k1);
-            return USERMEM_PTR;
+            // only redirect if the file exists
+            kprintf("testing: %s\n", USERMEM_PTR);
+            SceIoStat info;            
+            int status;
+            if((status = sceIoGetstat(USERMEM_PTR, &info)) < 0){
+                kprintf("skipping redirection:file not found: %s\n", USERMEM_PTR);
+            } else {
+                kprintf("redirecting %s --> %s\n", path, USERMEM_PTR);
+                pspSdkSetK1(k1);
+                return USERMEM_PTR;
+            } 
         }
         pspSdkSetK1(k1);
     }

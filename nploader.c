@@ -196,7 +196,15 @@ SceUID _npprx_open(const char *file, int flags, SceMode mode, int async) {
         default:
             kprintf("Failed to open/read %s, code: %08X\n", file, res);
         }
+    } 
+#ifdef CUSTOM_PATH    
+    else if (strncasecmp(file, "disc0", 5)) {
+        kprintf("redirecting non NPDRM file: %s\n", file);
+        char *redir = redirect_path(file);
+        if(redir) file = redir;
     }
+#endif
+
     int res = async ? sceIoOpenAsync_func(file, flags, mode) :
             sceIoOpen_func(file, flags, mode);
 #ifdef CUSTOM_PATH

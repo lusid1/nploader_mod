@@ -19,7 +19,7 @@ New in 0.8:
 Now you can place your DLC folders in a custom location (useful if you don't want to fill
 up your xmb menu with content that you aren't gonna launch). To do this create a file named
 nploader.ini (or use the file provided) and add/edit the path where you are gonna move
-your DLC folders. Example: ms0:/PSP/GAME/DLC
+your DLC folders. Example: ms0:/PSP/DLC
 Note: remember to add a newline to the end of the file.
 
 Important: the redirection is only for DLC files, if you have another content that is using
@@ -32,6 +32,9 @@ then disable the other.
 Do not mix with the npdrm_free plugin. Use the npdrm_free_mod plugin instead.
 
 Changelog:
+v1.1 MOD:
+      Improved DLC folder redirection compatability
+      Skip DLC redirection when the file does not exist at the custom DLC location.
 v1.0 MOD:
       Added support for encrypted DLC
 v0.9: Fixed bug with redirection on np_rename.
