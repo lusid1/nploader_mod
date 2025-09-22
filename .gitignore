@@ -1,0 +1,5 @@
+*.o
+nploader_mod.elf
+nploader_mod.prx
+nploader_mod_debug.elf
+nploader_mod_debug.prx
